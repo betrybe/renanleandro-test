@@ -1,3 +1,29 @@
+/* Consultas realizadas */
+
+/**
+ * função responsável por carregar os produtos da API
+ * e inseri-los na section items.
+ */
+function loadProducts(){
+  const sectionItems = document.getElementById('items');
+
+  fetch('https://api.mercadolibre.com/sites/MLB/search?q=computador')
+    .then((resp) => resp.json())
+    .then((json) => json.results)
+    .then((results) => results.forEach(result => {
+        const sectionProduct = createProductItemElement({
+          sku : result.id,
+          name : result.title,
+          image : result.thumbnail
+        });
+        sectionItems.appendChild(sectionProduct);
+        sectionItems.appendChild(sectionProduct);
+      })
+    );
+}
+
+/* FIM - Consultas */
+
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -40,4 +66,6 @@ function createCartItemElement({ sku, name, salePrice }) {
   return li;
 }
 
-window.onload = () => { };
+window.onload = () => {
+  loadProducts();
+ };
