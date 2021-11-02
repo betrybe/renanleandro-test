@@ -163,10 +163,29 @@ function getSkuFromProductItem(item) {
 }
 
 /**
+ * função responsável por limpar o carrinho de compras.
+ * Para isso, os elementos são removidos, o local storage
+ * é limpo e o texto do preço do carrinho, zerado.
+ * @param {PointerEvent} event 
+ */
+function clearCartListener(event){
+  const cartItemsElement = document.getElementById('cart_items');
+  while(cartItemsElement.childNodes.length > 0){
+    cartItemsElement.removeChild(cartItemsElement.lastChild);
+  }
+  
+  localStorage.skus = JSON.stringify([]);
+
+  const cartPriceElement = document.getElementById('cart_price');
+  cartPriceElement.innerText = '0';
+}
+
+/**
  * função responsável por adicionar os produtos na seção items
  */
  function loadProducts(){
   const itemsSection = document.getElementById('items');
+
   getProducts()
   .then( products => products.map(createProductItemElement))
   .then( productItemElements => productItemElements
@@ -185,7 +204,14 @@ function getSkuFromProductItem(item) {
 }
 
 window.onload = () => {
+  // pegando o botão de limpar o carrinho e adicionando o listener respectivo.
+  const clearButton = document.getElementById('empty-cart');
+  clearButton.addEventListener('click', clearCartListener);
+
+  // inicializando o preço do carrinho
   updateTotalPrice(0);
+
+  // carregando infos dos produtos (via API) e do carrinho (via local storage)
   loadProducts();
   loadFromLocalStorage();
 };
