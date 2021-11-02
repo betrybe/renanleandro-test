@@ -1,3 +1,10 @@
+function createLoadingDiv(){
+  const div = document.createElement('div');
+  div.className = 'loading';
+  div.id = 'loading';
+  return div;
+}
+
 /* Consultas realizadas */
 
 /**
@@ -185,12 +192,17 @@ function clearCartListener(event){
  */
  function loadProducts(){
   const itemsSection = document.getElementById('items');
+  
+  // adicionando a div de carregamento antes da requisição à API
+  const loadingDiv = createLoadingDiv();
+  itemsSection.appendChild(loadingDiv);
 
   getProducts()
   .then( products => products.map(createProductItemElement))
   .then( productItemElements => productItemElements
     .forEach(productItemElement => itemsSection.appendChild(productItemElement)) 
   )
+  .then(() => itemsSection.removeChild(loadingDiv)); // removendo a div de carregamento pós requisição.
 }
 
 /**
