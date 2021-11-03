@@ -1,9 +1,9 @@
 function createLoadingElement() {
   const p = document.createElement('p');
+  p.className = 'loading';
   p.innerText = 'loading...';
 
   const div = document.createElement('div');
-  div.className = 'loading';
   div.appendChild(p);
 
   return div;
