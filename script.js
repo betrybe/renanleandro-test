@@ -1,4 +1,4 @@
-function createLoadingDiv() {
+function createLoadingElement() {
   const p = document.createElement('p');
   p.className = 'loading';
   p.id = 'loading';
@@ -10,11 +10,15 @@ function createLoadingDiv() {
 
 /**
  * função responsável por carregar os produtos da API
- * retornando uma Promise com os produtos no formato esperado.
+ * Além disso, ao receber a resposta da API, a função onEndingRequest é invocada.
+ * @param {*} onEndingRequest
  */
- async function getProducts() {
+ async function getProducts(onEndingRequest) {
   return fetch('https://api.mercadolibre.com/sites/MLB/search?q=computador')
-  .then((resp) => resp.json())
+  .then((resp) => {
+    onEndingRequest();
+    return resp.json();
+  })
   .then((json) => json.results)
   .then((results) => results.map((result) => 
     ({
@@ -27,11 +31,16 @@ function createLoadingDiv() {
 /**
  * função responsável por carregar os produtos do carrinho da API
  * e retornar uma Promise com os produtos no formato esperado.
+ * Além disso, ao receber a resposta da API, a função onEndingRequest é invocada.
  * @param {int} sku 
+ * @param {*} onEndingRequest
  */
-async function getProductItem(sku) {
+async function getProductItem(sku, onEndingRequest) {
   return fetch(`https://api.mercadolibre.com/items/${sku}`)
-  .then((resp) => resp.json())
+  .then((resp) => {
+    onEndingRequest();
+    return resp.json();
+  })
   .then((result) => 
     ({
       sku: result.id,
@@ -138,16 +147,17 @@ function createClickableElement(element, className, innerText, clickListener) {
   const olCartItems = document.getElementById('cart_items');
   
   // adicionando a div de carregamento antes da requisição à API
-  const loadingDiv = createLoadingDiv();
+  const loadingDiv = createLoadingElement();
   olCartItems.appendChild(loadingDiv);
+
+  const onEndingRequest = () => olCartItems.removeChild(loadingDiv);
   
-  getProductItem(sku)
+  getProductItem(sku, onEndingRequest)
   .then((product) => {
     const cartItemElement = createCartItemElement(product);
     olCartItems.appendChild(cartItemElement);
     updateTotalPrice(product.salePrice);
-  })
-  .then(() => olCartItems.removeChild(loadingDiv)); // removendo a div de carregamento pós requisição.
+  });
 }
 
 function getSkuFromProductItem(item) {
@@ -197,14 +207,15 @@ function clearCartListener() {
   const itemsSection = document.getElementById('items');
   
   // adicionando a div de carregamento antes da requisição à API
-  const loadingDiv = createLoadingDiv();
+  const loadingDiv = createLoadingElement();
   itemsSection.appendChild(loadingDiv);
 
-  getProducts()
+  const onEndingRequest = () => itemsSection.removeChild(loadingDiv);
+
+  getProducts(onEndingRequest)
   .then((products) => products.map(createProductItemElement))
   .then((productItemElements) => productItemElements
-    .forEach((productItemElement) => itemsSection.appendChild(productItemElement)))
-  .then(() => itemsSection.removeChild(loadingDiv)); // removendo a div de carregamento pós requisição.
+    .forEach((productItemElement) => itemsSection.appendChild(productItemElement)));
 }
 
 /**
