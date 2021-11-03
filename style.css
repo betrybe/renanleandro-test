@@ -57,16 +57,27 @@
 }
 
 .loading {
-  border: 16px solid #b4f0b2;
+  border: 16px solid grey;
   border-top: 16px solid blue;
   border-radius: 50%;
   width: 200px;
   height: 200px;
-  animation: spin 2s cubic-bezier(0, 0, 0.44, 1.12) infinite; /* o cubic-bezier evita que a barra faça o movimento linear. me parece mais realista. */
+
+  /**
+   * o cubic-bezier evita que a barra faça o movimento linear.
+   * me parece mais realista.
+   */
+  animation: spin 2s cubic-bezier(0, 0, 0.44, 1.12) infinite;
 }
 
-/* proporciona a rotação da borda no topo (em azul). essa rotação simula o progresso do loading...*/
+/**
+ * proporciona a rotação da borda no topo (em azul).
+ * essa rotação simula o progresso do loading...
+ */
+
 @keyframes spin {
+
   0% { transform: rotate(0deg); }
+
   100% { transform: rotate(360deg); }
 }
