@@ -1,9 +1,9 @@
 function createLoadingDiv() {
-  const div = document.createElement('div');
-  div.className = 'loading';
-  div.id = 'loading';
-  div.innerText = 'loading';
-  return div;
+  const span = document.createElement('span');
+  span.className = 'loading';
+  span.id = 'loading';
+  span.innerText = 'loading...';
+  return span;
 }
 
 /* Consultas realizadas */
