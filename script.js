@@ -15,11 +15,11 @@ function createLoadingElement() {
  */
  async function getProducts(onEndingRequest) {
   return fetch('https://api.mercadolibre.com/sites/MLB/search?q=computador')
-  .then((resp) => {
+  .then((resp) => resp.json())
+  .then((json) => {
     onEndingRequest();
-    return resp.json();
+    return json.results;
   })
-  .then((json) => json.results)
   .then((results) => results.map((result) => 
     ({
       sku: result.id,
@@ -37,16 +37,15 @@ function createLoadingElement() {
  */
 async function getProductItem(sku, onEndingRequest) {
   return fetch(`https://api.mercadolibre.com/items/${sku}`)
-  .then((resp) => {
+  .then((resp) => resp.json())
+  .then((result) => {
     onEndingRequest();
-    return resp.json();
-  })
-  .then((result) => 
-    ({
+    return ({
       sku: result.id,
       name: result.title,
       salePrice: result.price,
-    }));
+    });
+  });
 }
 
 /* FIM - Consultas */
