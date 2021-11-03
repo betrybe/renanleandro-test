@@ -1,9 +1,12 @@
 function createLoadingElement() {
   const p = document.createElement('p');
-  p.className = 'loading';
-  p.id = 'loading';
   p.innerText = 'loading...';
-  return p;
+
+  const div = document.createElement('div');
+  div.className = 'loading';
+  div.appendChild(p);
+
+  return div;
 }
 
 /* Consultas realizadas */
