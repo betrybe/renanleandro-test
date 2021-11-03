@@ -1,9 +1,9 @@
 function createLoadingDiv() {
-  const span = document.createElement('span');
-  span.className = 'loading';
-  span.id = 'loading';
-  span.innerText = 'loading...';
-  return span;
+  const p = document.createElement('p');
+  p.className = 'loading';
+  p.id = 'loading';
+  p.innerText = 'loading...';
+  return p;
 }
 
 /* Consultas realizadas */
@@ -137,12 +137,17 @@ function createClickableElement(element, className, innerText, clickListener) {
  function addToCartItems(sku) {
   const olCartItems = document.getElementById('cart_items');
   
+  // adicionando a div de carregamento antes da requisição à API
+  const loadingDiv = createLoadingDiv();
+  olCartItems.appendChild(loadingDiv);
+  
   getProductItem(sku)
   .then((product) => {
     const cartItemElement = createCartItemElement(product);
     olCartItems.appendChild(cartItemElement);
     updateTotalPrice(product.salePrice);
-  });
+  })
+  .then(() => olCartItems.removeChild(loadingDiv)); // removendo a div de carregamento pós requisição.
 }
 
 function getSkuFromProductItem(item) {
