@@ -2,6 +2,7 @@ function createLoadingDiv() {
   const div = document.createElement('div');
   div.className = 'loading';
   div.id = 'loading';
+  div.innerText = 'loading';
   return div;
 }
 
