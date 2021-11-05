@@ -137,15 +137,10 @@ function createClickableElement(element, className, innerText, clickListener) {
 function addToCartItems(sku) {
   const olCartItems = document.getElementById('cart_items');
   
-  // adicionando a div de carregamento antes da requisição à API
-  const loadingDiv = createLoadingElement();
-  olCartItems.appendChild(loadingDiv);
-  
   getProductItem(sku)
   .then((product) => {
     const cartItemElement = createCartItemElement(product);
     olCartItems.appendChild(cartItemElement);
-    olCartItems.removeChild(loadingDiv);
     updateTotalPrice(product.salePrice);
   });
 }
