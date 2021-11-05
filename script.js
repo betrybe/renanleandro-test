@@ -2,11 +2,7 @@ function createLoadingElement() {
   const p = document.createElement('p');
   p.className = 'loading';
   p.innerText = 'loading...';
-
-  const div = document.createElement('div');
-  div.appendChild(p);
-
-  return div;
+  return p;
 }
 
 /* Consultas realizadas */
@@ -16,19 +12,15 @@ function createLoadingElement() {
  * Além disso, ao receber a resposta da API, a função onEndingRequest é invocada.
  * @param {*} onEndingRequest
  */
- async function getProducts(onEndingRequest) {
+ async function getProducts() {
   return fetch('https://api.mercadolibre.com/sites/MLB/search?q=computador')
   .then((resp) => resp.json())
-  .then((json) => {
-    onEndingRequest();
-    return json.results;
-  })
-  .then((results) => results.map((result) => 
-    ({
-      sku: result.id,
-      name: result.title,
-      image: result.thumbnail,
-    })));
+  .then((json) => json.results)
+  .then((results) => results.map((result) => ({
+    sku: result.id,
+    name: result.title,
+    image: result.thumbnail,
+  })));
 }
 
 /**
@@ -38,17 +30,14 @@ function createLoadingElement() {
  * @param {int} sku 
  * @param {*} onEndingRequest
  */
-async function getProductItem(sku, onEndingRequest) {
+async function getProductItem(sku) {
   return fetch(`https://api.mercadolibre.com/items/${sku}`)
   .then((resp) => resp.json())
-  .then((result) => {
-    onEndingRequest();
-    return ({
-      sku: result.id,
-      name: result.title,
-      salePrice: result.price,
-    });
-  });
+  .then((result) => ({
+    sku: result.id,
+    name: result.title,
+    salePrice: result.price,
+  }));
 }
 
 /* FIM - Consultas */
@@ -145,19 +134,18 @@ function createClickableElement(element, className, innerText, clickListener) {
  * na sua respectiva li e atualizando o preço total.
  * @param {int} sku 
  */
- function addToCartItems(sku) {
+function addToCartItems(sku) {
   const olCartItems = document.getElementById('cart_items');
   
   // adicionando a div de carregamento antes da requisição à API
   const loadingDiv = createLoadingElement();
   olCartItems.appendChild(loadingDiv);
-
-  const onEndingRequest = () => olCartItems.removeChild(loadingDiv);
   
-  getProductItem(sku, onEndingRequest)
+  getProductItem(sku)
   .then((product) => {
     const cartItemElement = createCartItemElement(product);
     olCartItems.appendChild(cartItemElement);
+    olCartItems.removeChild(loadingDiv);
     updateTotalPrice(product.salePrice);
   });
 }
@@ -212,12 +200,11 @@ function clearCartListener() {
   const loadingDiv = createLoadingElement();
   itemsSection.appendChild(loadingDiv);
 
-  const onEndingRequest = () => itemsSection.removeChild(loadingDiv);
-
-  getProducts(onEndingRequest)
+  getProducts()
   .then((products) => products.map(createProductItemElement))
   .then((productItemElements) => productItemElements
-    .forEach((productItemElement) => itemsSection.appendChild(productItemElement)));
+    .forEach((productItemElement) => itemsSection.appendChild(productItemElement)))
+  .then(setTimeout(() => itemsSection.removeChild(loadingDiv), 1000));
 }
 
 /**
