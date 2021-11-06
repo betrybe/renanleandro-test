@@ -43,14 +43,15 @@ async function getProductItem(sku) {
 
 /* FIM - Consultas */
 
-function updateTotalPrice(amount) {
+function updateTotalPrice() {
+  const cartItemsElement = document.getElementById('cart_items');
+
+  const totalPrice = Array.from(cartItemsElement.getElementsByClassName('item_price'))
+    .map((element) => parseFloat(element.innerText))
+    .reduce((acc, cur) => acc + cur, 0);
+
   const cartPriceElement = document.getElementById('cart_price');
-
-  let price = parseFloat(cartPriceElement.innerText);
-  price = price || 0; 
-  price += amount;
-
-  cartPriceElement.innerText = price;
+  cartPriceElement.innerText = totalPrice;
 }
 
 /**
@@ -70,13 +71,7 @@ function cartItemClickListener(event) {
   const index = Array.from(cartItemsElement.childNodes).indexOf(event.target);
   event.target.remove();
   removeFromLocalStorage(index);
-
-  const itemPriceElements = event.target.getElementsByClassName('item_price');
-
-  if (itemPriceElements.length > 0) {
-    const price = parseFloat(itemPriceElements[0].innerText);
-    updateTotalPrice(-price);
-  }
+  updateTotalPrice();
 }
 
 function createPriceItemElement(salePrice) {
@@ -142,8 +137,8 @@ function addToCartItems(sku) {
   .then((product) => {
     const cartItemElement = createCartItemElement(product);
     olCartItems.appendChild(cartItemElement);
-    updateTotalPrice(product.salePrice);
-  });
+  })
+  .then(() => updateTotalPrice());
 }
 
 function getSkuFromProductItem(item) {
@@ -189,11 +184,11 @@ function clearCartListener() {
 /**
  * função responsável por adicionar os produtos na seção items
  */
- function loadProducts() {
+async function loadProducts() {
   const itemsSection = document.getElementById('items');
   const loadingDiv = document.getElementById('loading');
 
-  getProducts()
+  return getProducts()
   .then((products) => products.map(createProductItemElement))
   .then((productItemElements) => productItemElements
     .forEach((productItemElement) => itemsSection.appendChild(productItemElement)))
@@ -219,10 +214,8 @@ window.onload = () => {
   const clearButton = document.getElementById('empty-cart');
   clearButton.addEventListener('click', clearCartListener);
 
-  // inicializando o preço do carrinho
-  updateTotalPrice(0);
-
   // carregando infos dos produtos (via API) e do carrinho (via local storage)
-  loadProducts();
   loadFromLocalStorage();
+  loadProducts()
+  .then(() => loadingDiv.remove());
 };
