@@ -1,8 +1,8 @@
 function createLoadingElement() {
-  const p = document.createElement('p');
-  p.className = 'loading';
-  p.innerText = 'loading...';
-  return p;
+  const h1 = document.createElement('h1');
+  h1.className = 'loading';
+  h1.innerText = 'loading...';
+  return h1;
 }
 
 /* Consultas realizadas */
@@ -193,13 +193,13 @@ function clearCartListener() {
   
   // adicionando a div de carregamento antes da requisição à API
   const loadingDiv = createLoadingElement();
-  itemsSection.appendChild(loadingDiv);
+  document.body.prepend(loadingDiv);
 
   getProducts()
   .then((products) => products.map(createProductItemElement))
   .then((productItemElements) => productItemElements
     .forEach((productItemElement) => itemsSection.appendChild(productItemElement)))
-  .then(setTimeout(() => itemsSection.removeChild(loadingDiv), 1000));
+  .then(() => loadingDiv.remove());
 }
 
 /**
