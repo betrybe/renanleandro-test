@@ -1,11 +1,3 @@
-function createLoadingElement() {
-  const p = document.createElement('p');
-  p.className = 'loading';
-  p.innerText = 'loading...';
-  p.id = 'loading';
-  return p;
-}
-
 /* Consultas realizadas */
 
 /**
@@ -205,17 +197,15 @@ async function loadProducts() {
   }
 }
 
-window.onload = () => {  
-  // adicionando o elemento de carregamento...
-  const loadingDiv = createLoadingElement();
-  document.body.prepend(loadingDiv);
-
+window.onload = () => {
   // pegando o botão de limpar o carrinho e adicionando o listener respectivo.
   const clearButton = document.getElementById('empty-cart');
   clearButton.addEventListener('click', clearCartListener);
 
+  const loadingElement = document.getElementById('loading');
+
   // carregando infos dos produtos (via API) e do carrinho (via local storage)
   loadFromLocalStorage();
   loadProducts()
-  .then(() => loadingDiv.remove());
+  .then(() => loadingElement.remove());
 };
