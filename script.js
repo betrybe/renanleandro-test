@@ -207,5 +207,5 @@ window.onload = () => {
   // carregando infos dos produtos (via API) e do carrinho (via local storage)
   loadFromLocalStorage();
   loadProducts()
-  .then(setTimeout(() => loadingElement.remove(), 1000));
+  .then(setTimeout(() => loadingElement.remove(), 500));
 };
