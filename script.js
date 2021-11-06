@@ -190,16 +190,11 @@ function clearCartListener() {
  */
  function loadProducts() {
   const itemsSection = document.getElementById('items');
-  
-  // adicionando a div de carregamento antes da requisição à API
-  const loadingDiv = createLoadingElement();
-  document.body.prepend(loadingDiv);
 
   getProducts()
   .then((products) => products.map(createProductItemElement))
   .then((productItemElements) => productItemElements
-    .forEach((productItemElement) => itemsSection.appendChild(productItemElement)))
-  .then(() => loadingDiv.remove());
+    .forEach((productItemElement) => itemsSection.appendChild(productItemElement)));
 }
 
 /**
@@ -212,7 +207,11 @@ function clearCartListener() {
   }
 }
 
-window.onload = () => {
+window.onload = () => {  
+  // adicionando o elemento de carregamento...
+  const loadingDiv = createLoadingElement();
+  document.body.prepend(loadingDiv);
+
   // pegando o botão de limpar o carrinho e adicionando o listener respectivo.
   const clearButton = document.getElementById('empty-cart');
   clearButton.addEventListener('click', clearCartListener);
@@ -223,4 +222,7 @@ window.onload = () => {
   // carregando infos dos produtos (via API) e do carrinho (via local storage)
   loadProducts();
   loadFromLocalStorage();
+
+  // removendo o elemento de carregamento
+  setTimeout(() => loadingDiv.remove(), 1000);
 };
