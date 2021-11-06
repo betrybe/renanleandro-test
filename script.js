@@ -1,3 +1,11 @@
+function createLoadingElement() {
+  const loadingElement = document.createElement('span');
+  loadingElement.className = 'loading';
+  loadingElement.id = 'loading';
+  loadingElement.innerText = 'loading...';
+  return loadingElement;
+}
+
 /* Consultas realizadas */
 
 /**
@@ -122,15 +130,14 @@ function createClickableElement(element, className, innerText, clickListener) {
  * na sua respectiva li e atualizando o preço total.
  * @param {int} sku 
  */
-function addToCartItems(sku) {
+async function addToCartItems(sku) {
   const olCartItems = document.getElementById('cart_items');
   
-  getProductItem(sku)
+  return getProductItem(sku)
   .then((product) => {
     const cartItemElement = createCartItemElement(product);
     olCartItems.appendChild(cartItemElement);
-  })
-  .then(() => updateTotalPrice());
+  });
 }
 
 function getSkuFromProductItem(item) {
@@ -139,7 +146,13 @@ function getSkuFromProductItem(item) {
 
 function addToCartClickListener(event) {
   const sku = getSkuFromProductItem(event.target.parentNode);
-  addToCartItems(sku);
+  const loadingElement = createLoadingElement();
+  document.body.prepend(loadingElement);
+
+  addToCartItems(sku)
+    .then(setTimeout(() => document.body.removeChild(loadingElement), 500))
+    .then(() => updateTotalPrice());
+
   addToLocalStorage(sku);
 }
 
@@ -190,11 +203,11 @@ async function loadProducts() {
 /**
  * função responsável por carregar os produtos do carrinho do repo local (local storage)
  */
- function loadFromLocalStorage() {
-  if (localStorage.skus) {
-    const skus = JSON.parse(localStorage.skus);
-    skus.forEach(addToCartItems);
-  }
+ async function loadFromLocalStorage() {
+  const jsonSkus = localStorage.skus || '[]';
+  const skus = JSON.parse(jsonSkus);
+  return Promise.all(skus.map(addToCartItems))
+    .then(() => updateTotalPrice());
 }
 
 window.onload = () => {
@@ -202,10 +215,10 @@ window.onload = () => {
   const clearButton = document.getElementById('empty-cart');
   clearButton.addEventListener('click', clearCartListener);
 
-  const loadingElement = document.getElementById('loading');
+  const loadingElement = createLoadingElement();
+  document.body.prepend(loadingElement);
 
   // carregando infos dos produtos (via API) e do carrinho (via local storage)
-  loadFromLocalStorage();
-  loadProducts()
-  .then(setTimeout(() => loadingElement.remove(), 500));
+  Promise.all([loadFromLocalStorage(), loadProducts()])
+    .then(setTimeout(() => document.body.removeChild(loadingElement), 500));
 };
