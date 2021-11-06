@@ -1,8 +1,9 @@
 function createLoadingElement() {
-  const h1 = document.createElement('h1');
-  h1.className = 'loading';
-  h1.innerText = 'Loading...';
-  return h1;
+  const p = document.createElement('p');
+  p.className = 'loading';
+  p.innerText = 'loading...';
+  p.id = 'loading';
+  return p;
 }
 
 /* Consultas realizadas */
@@ -190,11 +191,13 @@ function clearCartListener() {
  */
  function loadProducts() {
   const itemsSection = document.getElementById('items');
+  const loadingDiv = document.getElementById('loading');
 
   getProducts()
   .then((products) => products.map(createProductItemElement))
   .then((productItemElements) => productItemElements
-    .forEach((productItemElement) => itemsSection.appendChild(productItemElement)));
+    .forEach((productItemElement) => itemsSection.appendChild(productItemElement)))
+  .then(setTimeout(() => loadingDiv.remove(), 1000));
 }
 
 /**
@@ -222,7 +225,4 @@ window.onload = () => {
   // carregando infos dos produtos (via API) e do carrinho (via local storage)
   loadProducts();
   loadFromLocalStorage();
-
-  // removendo o elemento de carregamento
-  setTimeout(() => loadingDiv.remove(), 1000);
 };
