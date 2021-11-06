@@ -1,7 +1,7 @@
 function createLoadingElement() {
   const h1 = document.createElement('h1');
   h1.className = 'loading';
-  h1.innerText = 'loading...';
+  h1.innerText = 'Loading...';
   return h1;
 }
 
