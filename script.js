@@ -218,7 +218,9 @@ window.onload = () => {
   const loadingElement = createLoadingElement();
   document.body.prepend(loadingElement);
 
+  setTimeout(() => document.body.removeChild(loadingElement), 1000);
+
   // carregando infos dos produtos (via API) e do carrinho (via local storage)
-  Promise.all([loadFromLocalStorage(), loadProducts()])
-    .then(setTimeout(() => document.body.removeChild(loadingElement), 500));
+  Promise.all([loadFromLocalStorage(), loadProducts()]);
+  //  .then(setTimeout(() => document.body.removeChild(loadingElement), 500));
 };
