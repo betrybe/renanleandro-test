@@ -26,7 +26,7 @@ jobs:
         uses: betrybe/cypress-evaluator-action@v5
         with:
           repository-test-name: 'betrybe/sd-0x-project-shopping-cart-tests'
-          repository-test-branch: 'master'
+          repository-test-branch: 'challenge-tests'
         env:
           GITHUB_USER_TEST: ${{ github.actor }} 
       - name: Store evaluation step
